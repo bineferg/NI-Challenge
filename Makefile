@@ -1,7 +1,8 @@
-CC=g++
-CFLAGS=-c -Wall -Iinclude -std=c++11
-BUILD_FOLDER=build
-FILE = audioeffect
+CC           = g++
+CFLAGS       =-c -Wall -Iinclude -std=c++11
+BUILD_FOLDER ?= build
+FILE         ?= audioeffect
+
 all: clean build audios
 
 audios: effect
@@ -27,3 +28,5 @@ leak-check: docker-build
 
 run:
 	./$(BUILD_FOLDER)/$(FILE)
+
+.PHONY: audios build clean debug docker-build leak-check run
