@@ -51,13 +51,13 @@ void test_no_feedback()
 {
 	std::cout << "Testing a list with no feedback.." << std::endl;
 	auto head = std::make_shared<Effect>();
-	auto n1 = std::make_shared<Effect>();
-	auto n2 = std::make_shared<Effect>();
-	auto n3 = std::make_shared<Effect>();
+	auto ae1 = std::make_shared<Effect>();
+	auto ae2 = std::make_shared<Effect>();
+	auto ae3 = std::make_shared<Effect>();
 	
-	head->next = n1;
-	n1->next = n2;
-	n2->next = n3;
+	head->next = ae1;
+	ae1->next = ae2;
+	ae2->next = ae3;
 
 	bool feedback = detect_feedback(head);
 	assert(feedback == false);
@@ -65,7 +65,7 @@ void test_no_feedback()
 }
 
 
-// When ownership of n1 is stored with another shared pointer (n3 which causes the loop)
+// When ownership of ae1 is stored with another shared pointer (ae3 which causes the loop)
 // a cyclical reference causes a memory leak (ie.e the Effect is only deleted when all
 // the ->next references are deleted but these are only deleted once the Effect is deleted.)
 //
@@ -75,14 +75,14 @@ void test_with_feedback()
 {
 	std::cout << "Testing a list with feedback.." << std::endl;
 	auto head = std::make_shared<Effect>();
-	auto n1 = std::make_shared<Effect>();
-	auto n2 = std::make_shared<Effect>();
-	auto n3 = std::make_shared<Effect>();
+	auto ae1 = std::make_shared<Effect>();
+	auto ae2 = std::make_shared<Effect>();
+	auto ae3 = std::make_shared<Effect>();
 	
-	head->next = n1;
-	n1->next = n2;
-	n2->next = n3;
-	n3->next = n1; // Causes the cyclical reference / memory leak
+	head->next = ae1;
+	ae1->next = ae2;
+	ae2->next = ae3;
+	ae3->next = ae1; // Causes the cyclical reference / memory leak
 	
 	bool feedback = detect_feedback(head);
 	assert(feedback == true);
