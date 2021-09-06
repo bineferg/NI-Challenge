@@ -4,7 +4,7 @@
  * audioeffect.cpp
  * @author EF
  *
- * Further answers to Question 2 can be found in README.md
+ * Please find further answers to Question 2 in README.md
  *
  **/
 
@@ -12,6 +12,8 @@
 #include<memory>
 #include<cassert>
 
+// AudioEffect is the base class for effects that can process 
+// audio and have a subsequent effect (next).
 struct AudioEffect 
 {
 	virtual ~AudioEffect() = default;
@@ -98,7 +100,7 @@ void test_null()
 }
 
 // Creates and tests if effects chains
-// have a feedback loop exists.
+// have a feedback loop.
 int main(void) {
 	test_no_feedback();
 	test_with_feedback();
