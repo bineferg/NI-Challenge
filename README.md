@@ -4,7 +4,8 @@ A simple function checking if there is a feedback loop in the effects chain
 
 
 ## Requirements 
-* CPP/GCLANG
+* clang 
+* Docker (for valgrind)
 
 ## Build & Run
 * Unit testing is done without a framework and just uses `assert` statments.
@@ -16,15 +17,11 @@ $ make all run
 
 ## The way AudioEffect is designed is not ideal. What would you change about the design?
 
-Using `shared_ptr` for the effects chain is not ideal because there is no indication that non-deterministic shared ownership is required. In other words, `shared_ptr` are best used in scenarios where more than one owner might manage the lifetime of an object, with an "effects chain" this is not an apparent requirement, but rather each AudioEffect object would own the next.
+Using `shared_ptr` for the effects chain is not ideal because there is no indication that non-deterministic shared ownership is required. In other words, `shared_ptr` are best used in scenarios where more than one owner might manage the lifetime of an object, with an "effects chain" this is not an apparent requirement, but rather each AudioEffect would own the next.
 
-Additionally, as noted in the code, using shared pointers in a scenario where valid cyclical references occur, like in a feedback loop, will cause memory leaks. Please see the valgrind output below.
+Additionally, as noted in the code, using shared pointers in a scenario where valid cyclical references occur, like in a feedback loop, will cause memory leaks. Please see the valgrind output below. This could be improved by using `weak_ptr`s for the cyclical referencing.
 
-A better fit could be to use `unique_ptr` to manage the allocation/deallocation of an AudioEffect.
-
-This can be delicate to use for constructing more simple, lower level data types such as a effects chain (which I am interpreting as a singly linked list). When using a `unique_ptr` for example, deleting a node is prone to mistakes such as overflowing the stack because deleting a given node could mean deleting all its subsequent nodes first. (Though this can of course be avoided with a custom destructor.)
-
-Depending on the context and requirements of the system / effects chain, it might be better still to just use a standard container class such as `std::list` or `std::vector`. It is really a question of context, and who should own the resources.
+A better fit could be to use `unique_ptr` to manage the allocation/deallocation of an AudioEffect. This however can also be delicate to use for constructing more simple, lower level data types such as a effects chain (which I am interpreting as a singly linked list). Depending on the context and requirements of the system / effects chain, it might be better still to just use a standard container class such as `std::list` or `std::vector`. It is really a question of context, and who should own the resources.
 
 ## Memory Checks
 *Note:* A docker container was used in order to run Valgrind on linux
